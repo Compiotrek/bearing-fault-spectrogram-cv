@@ -1,0 +1,47 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Test, lint, and type-check caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE and operating system files
+.idea/
+.vscode/
+.DS_Store
+
+# Environment variables and local configuration
+.env
+.env.*
+!.env.example
+
+# Data and generated ML artifacts
+data/raw/**
+data/processed/*
+models/*
+reports/figures/*
+
+# Keep optional directory placeholders
+!data/raw/**/
+!data/raw/**/.gitkeep
+!data/processed/.gitkeep
+!models/.gitkeep
+!reports/figures/.gitkeep
