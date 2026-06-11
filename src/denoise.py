@@ -32,9 +32,7 @@ def butterworth_bandpass_filter(
         raise TypeError("sample_rate must be an integer")
     if sample_rate <= 0:
         raise ValueError("sample_rate must be positive")
-    if isinstance(order, (bool, np.bool_)) or not isinstance(
-        order, (int, np.integer)
-    ):
+    if isinstance(order, (bool, np.bool_)) or not isinstance(order, (int, np.integer)):
         raise TypeError("order must be an integer")
     if order <= 0:
         raise ValueError("order must be positive")

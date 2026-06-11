@@ -94,9 +94,7 @@ def infer_metadata_from_path(
             f"invalid load directory {load_directory!r}; expected load_0 through load_3"
         )
 
-    if isinstance(sample_rate, bool) or not isinstance(
-        sample_rate, (int, np.integer)
-    ):
+    if isinstance(sample_rate, bool) or not isinstance(sample_rate, (int, np.integer)):
         raise TypeError("sample_rate must be an integer")
     if sample_rate <= 0:
         raise ValueError("sample_rate must be positive")
