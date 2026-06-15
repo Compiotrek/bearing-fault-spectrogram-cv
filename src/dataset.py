@@ -8,6 +8,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import numpy as np
+import torch
+from torch.utils.data import Dataset
 
 from src.data_loader import discover_recordings, load_mat_signal
 from src.denoise import butterworth_bandpass_filter
@@ -45,6 +47,53 @@ class ProcessedSample:
     window_start: int
     signal_key: str
     sample_rate: int
+
+
+class SpectrogramDataset(Dataset[tuple[torch.Tensor, torch.Tensor]]):
+    """Load cached spectrograms as PyTorch tensors."""
+
+    def __init__(
+        self,
+        samples: list[ProcessedSample],
+        split: str | None = None,
+        variant: str | None = None,
+        repeat_channels: bool = False,
+    ) -> None:
+        filtered_samples = [
+            sample
+            for sample in samples
+            if (split is None or sample.split == split)
+            and (variant is None or sample.variant == variant)
+        ]
+        if not filtered_samples:
+            raise ValueError("no samples remain after applying dataset filters")
+        self.samples = filtered_samples
+        self.repeat_channels = repeat_channels
+
+    def __len__(self) -> int:
+        return len(self.samples)
+
+    def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
+        sample = self.samples[index]
+        spectrogram = np.load(sample.spectrogram_path, allow_pickle=False)
+        if spectrogram.ndim != 2:
+            raise ValueError(
+                f"spectrogram at {sample.spectrogram_path} must be two-dimensional"
+            )
+        if not np.issubdtype(spectrogram.dtype, np.number):
+            raise TypeError(f"spectrogram at {sample.spectrogram_path} must be numeric")
+        if not np.all(np.isfinite(spectrogram)):
+            raise ValueError(
+                f"spectrogram at {sample.spectrogram_path} must contain finite values"
+            )
+
+        image = torch.from_numpy(spectrogram.astype(np.float32, copy=False)).unsqueeze(
+            0
+        )
+        if self.repeat_channels:
+            image = image.repeat(3, 1, 1)
+        label = torch.tensor(sample.label_id, dtype=torch.long)
+        return image, label
 
 
 def split_from_load(load: int) -> str:

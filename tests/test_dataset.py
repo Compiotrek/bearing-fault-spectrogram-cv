@@ -2,10 +2,12 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+import torch
 from scipy.io import savemat
 
 from src.dataset import (
     ProcessedSample,
+    SpectrogramDataset,
     build_processed_dataset,
     class_mapping,
     load_manifest,
@@ -174,3 +176,113 @@ def test_load_manifest_round_trips_processed_samples(
     assert all(isinstance(sample, ProcessedSample) for sample in loaded_samples)
     assert all(isinstance(sample.recording_path, Path) for sample in loaded_samples)
     assert all(isinstance(sample.spectrogram_path, Path) for sample in loaded_samples)
+
+
+def make_processed_sample(
+    tmp_path: Path,
+    *,
+    sample_id: str,
+    split: str,
+    variant: str,
+    label_id: int,
+) -> ProcessedSample:
+    spectrogram_path = tmp_path / f"{sample_id}.npy"
+    np.save(
+        spectrogram_path,
+        np.arange(20, dtype=np.float32).reshape(4, 5),
+        allow_pickle=False,
+    )
+    return ProcessedSample(
+        sample_id=sample_id,
+        recording_path=tmp_path / f"{sample_id}.mat",
+        spectrogram_path=spectrogram_path,
+        label="normal",
+        label_id=label_id,
+        load=0,
+        split=split,
+        variant=variant,
+        window_start=0,
+        signal_key="X001_DE_time",
+        sample_rate=12000,
+    )
+
+
+def test_spectrogram_dataset_returns_one_channel_image_and_long_label(
+    tmp_path: Path,
+) -> None:
+    sample = make_processed_sample(
+        tmp_path,
+        sample_id="clean_train",
+        split="train",
+        variant="clean",
+        label_id=2,
+    )
+
+    image, label = SpectrogramDataset([sample])[0]
+
+    assert image.shape == (1, 4, 5)
+    assert image.dtype == torch.float32
+    assert label.dtype == torch.long
+    assert label.item() == 2
+
+
+def test_spectrogram_dataset_repeats_channels(tmp_path: Path) -> None:
+    sample = make_processed_sample(
+        tmp_path,
+        sample_id="clean_train",
+        split="train",
+        variant="clean",
+        label_id=0,
+    )
+
+    image, _ = SpectrogramDataset([sample], repeat_channels=True)[0]
+
+    assert image.shape == (3, 4, 5)
+    torch.testing.assert_close(image[0], image[1])
+    torch.testing.assert_close(image[1], image[2])
+
+
+def test_spectrogram_dataset_filters_by_split_and_variant(tmp_path: Path) -> None:
+    samples = [
+        make_processed_sample(
+            tmp_path,
+            sample_id="clean_train",
+            split="train",
+            variant="clean",
+            label_id=0,
+        ),
+        make_processed_sample(
+            tmp_path,
+            sample_id="noisy_train",
+            split="train",
+            variant="noisy_5db",
+            label_id=1,
+        ),
+        make_processed_sample(
+            tmp_path,
+            sample_id="clean_val",
+            split="val",
+            variant="clean",
+            label_id=2,
+        ),
+    ]
+
+    dataset = SpectrogramDataset(samples, split="train", variant="clean")
+
+    assert len(dataset) == 1
+    assert dataset.samples[0].sample_id == "clean_train"
+
+
+def test_spectrogram_dataset_rejects_empty_filtered_dataset(
+    tmp_path: Path,
+) -> None:
+    sample = make_processed_sample(
+        tmp_path,
+        sample_id="clean_train",
+        split="train",
+        variant="clean",
+        label_id=0,
+    )
+
+    with pytest.raises(ValueError, match="no samples remain"):
+        SpectrogramDataset([sample], split="test")

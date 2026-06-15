@@ -1,0 +1,274 @@
+{
+  "checkpoint": "models/resnet18_clean/best_model.pt",
+  "model_name": "resnet18",
+  "num_classes": 4,
+  "class_mapping": {
+    "normal": 0,
+    "ball": 1,
+    "inner_race": 2,
+    "outer_race": 3
+  },
+  "split": "test",
+  "device": "cpu",
+  "variants": {
+    "clean": {
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "per_class_recall": {
+        "normal": 1.0,
+        "ball": 1.0,
+        "inner_race": 1.0,
+        "outer_race": 1.0
+      },
+      "confusion_matrix": [
+        [
+          473,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          117,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          119,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          118
+        ]
+      ],
+      "sample_count": 827
+    },
+    "noisy_10db": {
+      "accuracy": 0.9504232164449818,
+      "macro_f1": 0.9093089980145818,
+      "per_class_recall": {
+        "normal": 0.9978858350951374,
+        "ball": 1.0,
+        "inner_race": 0.9915966386554622,
+        "outer_race": 0.6694915254237288
+      },
+      "confusion_matrix": [
+        [
+          472,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          117,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          118,
+          0
+        ],
+        [
+          0,
+          16,
+          23,
+          79
+        ]
+      ],
+      "sample_count": 827
+    },
+    "noisy_5db": {
+      "accuracy": 0.6106408706166868,
+      "macro_f1": 0.48399227598299843,
+      "per_class_recall": {
+        "normal": 0.5750528541226215,
+        "ball": 1.0,
+        "inner_race": 0.9663865546218487,
+        "outer_race": 0.00847457627118644
+      },
+      "confusion_matrix": [
+        [
+          272,
+          201,
+          0,
+          0
+        ],
+        [
+          0,
+          117,
+          0,
+          0
+        ],
+        [
+          0,
+          4,
+          115,
+          0
+        ],
+        [
+          0,
+          1,
+          116,
+          1
+        ]
+      ],
+      "sample_count": 827
+    },
+    "noisy_0db": {
+      "accuracy": 0.29020556227327693,
+      "macro_f1": 0.24803137757234123,
+      "per_class_recall": {
+        "normal": 0.02748414376321353,
+        "ball": 0.9316239316239316,
+        "inner_race": 0.9915966386554622,
+        "outer_race": 0.0
+      },
+      "confusion_matrix": [
+        [
+          13,
+          436,
+          24,
+          0
+        ],
+        [
+          0,
+          109,
+          8,
+          0
+        ],
+        [
+          0,
+          1,
+          118,
+          0
+        ],
+        [
+          0,
+          0,
+          118,
+          0
+        ]
+      ],
+      "sample_count": 827
+    },
+    "denoised_10db": {
+      "accuracy": 0.8621523579201935,
+      "macro_f1": 0.6854275335320418,
+      "per_class_recall": {
+        "normal": 1.0,
+        "ball": 1.0,
+        "inner_race": 1.0,
+        "outer_race": 0.03389830508474576
+      },
+      "confusion_matrix": [
+        [
+          473,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          117,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          119,
+          0
+        ],
+        [
+          0,
+          0,
+          114,
+          4
+        ]
+      ],
+      "sample_count": 827
+    },
+    "denoised_5db": {
+      "accuracy": 0.8536880290205562,
+      "macro_f1": 0.6624914083131352,
+      "per_class_recall": {
+        "normal": 1.0,
+        "ball": 0.9743589743589743,
+        "inner_race": 1.0,
+        "outer_race": 0.0
+      },
+      "confusion_matrix": [
+        [
+          473,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          114,
+          3,
+          0
+        ],
+        [
+          0,
+          0,
+          119,
+          0
+        ],
+        [
+          0,
+          0,
+          118,
+          0
+        ]
+      ],
+      "sample_count": 827
+    },
+    "denoised_0db": {
+      "accuracy": 0.6892382103990327,
+      "macro_f1": 0.41927871953362816,
+      "per_class_recall": {
+        "normal": 0.919661733615222,
+        "ball": 0.13675213675213677,
+        "inner_race": 1.0,
+        "outer_race": 0.0
+      },
+      "confusion_matrix": [
+        [
+          435,
+          3,
+          35,
+          0
+        ],
+        [
+          1,
+          16,
+          100,
+          0
+        ],
+        [
+          0,
+          0,
+          119,
+          0
+        ],
+        [
+          0,
+          0,
+          118,
+          0
+        ]
+      ],
+      "sample_count": 827
+    }
+  }
+}
